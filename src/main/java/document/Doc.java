@@ -1,3 +1,5 @@
+package document;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -104,6 +106,10 @@ public class Doc {
             newText = newText.replace("  ", " ");
         }
 
+        while(newText.contains("&nbsp;")) {
+            newText = newText.replace("&nbsp;", "");
+        }
+
         // remove space after \n
         while(newText.contains("\n ")) {
             newText = newText.replace("\n ", "\n");
@@ -113,6 +119,11 @@ public class Doc {
         while(newText.contains("\n\n")) {
             newText = newText.replace("\n\n", "\n");
         }
+
+        newText.trim();
+        while (newText.endsWith("\n")) newText=newText.substring(0, newText.length()-1);
+        newText.trim();
+        while (newText.startsWith("\n")) newText=newText.substring(1);
 
         newText=newText.trim();
         return newText;

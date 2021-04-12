@@ -1,3 +1,5 @@
+package algorithm;
+
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -7,13 +9,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class CompositeTextDensity {
+public class CompositeTextDensity implements Density{
+
+    private long lcb;
+    private long cb;
     public CompositeTextDensity(){}
 
-    public boolean isRemoveTag(Element element){
-        String tagName = element.tagName().toLowerCase();
-        if(tagName.equals("script")||tagName.equals("style")||tagName.equals("button")||tagName.equals("img")||tagName.equals("a")||tagName.equals("select")) return true;
-        return false;
+    public CompositeTextDensity(long lcb, long cb){
+        this.lcb=lcb;
+        this.cb=cb;
+    }
+
+    public long getLcb() {
+        return lcb;
+    }
+
+    public void setLcb(long lcb) {
+        this.lcb = lcb;
+    }
+
+    public long getCb() {
+        return cb;
+    }
+
+    public void setCb(long cb) {
+        this.cb = cb;
     }
 
     //Ti
@@ -59,18 +79,6 @@ public class CompositeTextDensity {
             sum+=e.text().length();
         }
         return sum;
-        /*
-        long sum=0;
-        String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-        String textElement = element.getAllElements().first().text();
-        StringTokenizer textBlock=new StringTokenizer(textElement, " ");
-        while (textBlock.hasMoreTokens()){
-            String nextText=textBlock.nextToken();
-            if(nextText.matches(regex)){
-                sum+=nextText.length();
-            }
-        }
-        return sum;*/
     }
 
     //-LCi ok
@@ -78,7 +86,7 @@ public class CompositeTextDensity {
         return countChar(element)-countLinkChar(element);
     }
 
-    public double getCompositeTextDensityOfElement(Element element, long lcb, long cb){
+    public double getDensityOfElement(Element element){
         String tagName = element.tagName().toLowerCase();
         if(tagName.equals("script")||tagName.equals("style")||tagName.equals("button")||tagName.equals("img")||tagName.equals("a")||tagName.equals("select")) return 0;
 
@@ -102,37 +110,37 @@ public class CompositeTextDensity {
     }
 
 
-    public Map<Element, Double> ComputingCompositeTextDensity(Element element, long lcb, long cb){
+    public Map<Element, Double> ComputingDensity(Element element){
         List<Element> elementList = element.getAllElements();
         Map<Element, Double> mapCompositeTextDensity = new HashMap<>();
         for(Element e: elementList){
-            double compositeTextDensity = getCompositeTextDensityOfElement(e, lcb, cb);
+            double compositeTextDensity = getDensityOfElement(e);
             mapCompositeTextDensity.put(e,compositeTextDensity);
         }
         return mapCompositeTextDensity;
     }
 
-    public double getCompositeDensitySumOfElement(Element element, long lcb, long cb){
+    public double getDensitySumOfElement(Element element){
         List<Element> elementList = element.children();
         double sum=0;
         for(Element e: elementList){
-            sum+=getCompositeTextDensityOfElement(e, lcb, cb);
+            sum+=getDensityOfElement(e);
         }
         return sum;
     }
 
-    public Map<Element, Double> ComputingCompositeDensitySum(Element element, long lcb, long cb){
+    public Map<Element, Double> ComputingDensitySum(Element element){
         List<Element> elementList = element.getAllElements();
         Map<Element, Double> mapCompositeTextDensity = new HashMap<>();
         for(Element e: elementList){
-            double compositeTextDensity = getCompositeTextDensityOfElement(e, lcb, cb);
+            double compositeTextDensity = getDensityOfElement(e);
             mapCompositeTextDensity.put(e,compositeTextDensity);
         }
         return mapCompositeTextDensity;
     }
 
-    public Element maxElementCompositeDensity(Element element, long lcb, long cb){
-        Map<Element, Double> mapCompositeTextDensity = ComputingCompositeDensitySum(element, lcb, cb);
+    public Element maxElementDensity(Element element){
+        Map<Element, Double> mapCompositeTextDensity = ComputingDensitySum(element);
         double max = 0;
         Element Emax = null;
         for(Map.Entry<Element, Double> em: mapCompositeTextDensity.entrySet()){
@@ -144,12 +152,12 @@ public class CompositeTextDensity {
         return Emax;
     }
 
-    public double threshold(Element element, long lcb, long cb){
-        Element Emax = maxElementCompositeDensity(element, lcb, cb);
+    public double threshold(Element element){
+        Element Emax = maxElementDensity(element);
         Elements elements = Emax.getAllElements();
         double thres = Double.MAX_VALUE;
         for(Element e : elements){
-            double tmp = getCompositeDensitySumOfElement(e, lcb, cb);
+            double tmp = getDensitySumOfElement(e);
             if(thres>tmp) thres=tmp;
         }
         return thres;

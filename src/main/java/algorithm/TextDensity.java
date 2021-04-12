@@ -1,3 +1,5 @@
+package algorithm;
+
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -5,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TextDensity {
+public class TextDensity implements Density{
     public TextDensity(){}
 
     // tính số tag của 1 element
@@ -33,7 +35,7 @@ public class TextDensity {
     }
 
     // trả về mật độ văn bản của một thẻ
-    public double getTextDensityOfElement(Element element){
+    public double getDensityOfElement(Element element){
         long tag=countTag(element);
         tag=tag>1?tag:1;
         return countChar(element)*1.0/tag;
@@ -44,7 +46,7 @@ public class TextDensity {
         List<Element> elementList = element.getAllElements();
         Map<Element, Double> mapTextDensity = new HashMap<>();
         for(Element e: elementList){
-            double textDensity = getTextDensityOfElement(e);
+            double textDensity = getDensityOfElement(e);
             mapTextDensity.put(e,textDensity);
         }
         return mapTextDensity;
@@ -55,7 +57,7 @@ public class TextDensity {
         List<Element> elementList = element.children();
         double sum=0;
         for(Element e: elementList){
-            sum+=getTextDensityOfElement(e);
+            sum+=getDensityOfElement(e);
         }
         return sum;
     }
